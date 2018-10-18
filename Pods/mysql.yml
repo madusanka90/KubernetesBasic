@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysqldb
+  labels:
+    version: v5.6
+    database: mysql
+spec:
+  containers:
+    - name: mysqldb
+      image: mysql:5.6
+      resources:
+        requests:
+          cpu: "500m"
+          memory: "512Mi"
+        limits:
+          cpu: "1000m"
+          memory: "1024Mi"
+      ports:
+        - containerPort: 3306
+          name: mysql
+          protocol: TCP
+      env:       
+        - name: MYSQL_ROOT_PASSWORD
+          value: cGFzc3dvcmQK
+      volumeMounts:
+        - name: "mysql-vol"
+          mountPath: "/var/lib/mysql"
+  volumes:
+    - name: "mysql-vol"
+      hostPath:
+        path: "/mnt/mysql-vol"

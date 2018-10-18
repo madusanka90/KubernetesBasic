@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Nmaespace
+metadata:
+  name: mysql
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: mysqldb
+spec:
+  replicas: 3
+  selector:
+    version: latest
+    tier: backend
+  minReadySeconds: 10
+  template:
+    metadata:
+      name: mysqldb
+      labels:
+        version: latest
+        tier: backend
+  spec:
+    containers:
+      - name: mysqldb
+        image: mysql:latest
+        ports:
+          - containerPort: 80
+            name: mysql-ports
+            protocol: TCP
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: password
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            port: 80
+            path: /
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+          periodSeconds: 5
+          failureThreshold: 3
+        volumeMounts:
+          - name: "mysql-data"
+            mountPath: "/mnt/mysql-data"
+          - name: "mysql-nfs"
+            mountPath: "/mnt/nfs/mysql-data"
+    volumes:
+      - name: "mysql-data"
+        hostPath:
+          path: "/mnt/mysql-data"
+      - name: "mysql-nfs"
+        nfs:
+          server: my.nfs-server.local
+          path: /mnt/nfs/mysql-data
+      

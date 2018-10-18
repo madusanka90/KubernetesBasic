@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tomcat
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  namespace: tomcat
+  name: tomcatweb
+spec:
+  replicas: 3
+  minReadySeconds: 10
+  selector:
+    version: latest
+    tier: frontend
+  template:
+    metadata:
+      name: tomcatweb
+      labels:
+        version: latest
+        tier: frontend
+  spec:
+    containers:
+      - name: tomcatweb
+        image: tomcat:latest
+        ports:
+          - containerPort: 8080
+            name: tomcat-port
+            protocol: TCP
+        env:
+          - name: "CATALINA_HOME"
+            value: "/usr/local/tomcat"
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+          periodSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+          periodSeconds: 5
+          failureThreshold: 3
+        volumeMounts:
+          - name: "tomcat-vol"
+            mountPath: "/usr/local/tomcat"
+    volumes:
+      - name: "tomcat-vol"
+        hostPath:
+          path: "/mnt/tomcat"  

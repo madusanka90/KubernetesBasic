@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nginx
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: nginxweb
+  namespace: nginx
+spec:
+  selector:
+    version: latest
+    engine: nginx
+  replicas: 3
+  minReadySeconds: 10
+  template:
+    metadata:
+      name: nginxweb
+      labels:
+        version: latest
+        engine: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          env:
+            - name: APP_HOME
+              value: "/usr/share/nginx"
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            periodSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            periodSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: "nginx-vol"
+              mountPath: "/usr/share/nginx/html"
+            - name: "nginx-nfs"
+              mountPath: "/mnt/nfs/nginx"
+      volumes:
+        - name: "nginx-vol"
+          hostPath:
+            path: "/mnt/nginx-vol"
+        - name: "nginx-nfs"
+          nfs:
+            server: my.nfs-server.local
+            path: "/mnt/nfs/nginx"
+    

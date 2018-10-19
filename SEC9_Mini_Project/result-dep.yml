@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: result
+  namespace: miniproj
+spec:
+  replicas: 2
+  minReadySeconds: 20
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    paused: true
+    revisionHistoryLimit: 4
+    selector:
+      matchLabels:
+        role: result
+      template:
+        metadata:
+          role: worker
+          version: v1
+          app: python
+        containers:
+          - name: result
+            iamge: schoolofdevops/vote-result
+            ports:
+              - containerPort: 80
+                name: http
+                protocol: TCP

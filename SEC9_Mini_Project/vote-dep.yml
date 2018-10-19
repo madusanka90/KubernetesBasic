@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vote
+  namespace: miniproj
+spec:
+  replicas: 6
+  minReadySeconds: 20
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 2
+    pause: true
+    revisionHistoryLimit: 4
+  selector:
+    matchLabel:
+      role: vote
+    matchExpressions:
+      - {key: version, operator:In, values:[v1, v2, v3]}
+  template:
+    metadata:
+      name: vote
+      labels:
+        role: vote
+        app: python
+        version: v1
+    containers:
+      - name: vote
+        image: schoolofdevops/vote:v1
+        ports:
+          - containerPort: 80
+            protocol: TCP
+            name: vote

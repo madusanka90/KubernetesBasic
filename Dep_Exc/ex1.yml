@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app : nginx
+spec:
+  replicas: 3
+  minReadySeconds: 20
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 2
+  revisionHistoryLimit: 4
+  paused: false
+  selector:
+    matchLabels:
+      app: nginx
+      teir: frontend
+  template:
+    metadata:
+      labels:
+        app: nginx
+        teir: frontend
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+              protocol: TCP
+              name: http
+          imagePullPolicy: Always

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: miniproj
+spec:
+  relicas: 2
+  minReadySeconds: 20
+#  strategy:
+#    type: RollingUpdate
+#    rollingUpdate:
+#      maxSurge: 1
+#      maxUnavailable: 1
+#    pause: true
+#    revisionHistoryLimit: 4
+  selector:
+    matchLabels:
+      role: redis
+      tier: backend
+    template:
+      metadata:
+        name: redis
+        labels:
+          role: redis
+          version: latest
+          db: redis
+          tier: backend
+      containers:
+        - name: redis
+          image: schoolofdevops/redis:latest
+          ports:
+            - containerPort: 6379
+              protocol: TCP
+              name: redis
+          imagePullPolicy: always
+      restartPolicy: always

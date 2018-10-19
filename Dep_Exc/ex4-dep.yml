@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: robotshop
+spec:
+  replicas: 4
+  minReadySeconds:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 2
+  paused: false
+  revisionHistoryLimit: 4
+  selector:
+    matchLabels:
+      env: prod
+      tier: web
+  template:
+    metadata:
+      labels:
+        env: prod
+        tier: web
+    spec:
+      containers:
+        - name: robotshop
+          image: robotshop/rs-web:v0.3.0
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+      restartPolicy: Always

@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: testjob
+spec:
+  completion: 4
+  parallelism: 2
+  template:
+    metadata:
+      name: jobone
+      labels:
+        version: v1
+    spec:
+      containers:
+        - name: jobone
+          image: luksa/batch-job
+      restartPolicy: OnFailure

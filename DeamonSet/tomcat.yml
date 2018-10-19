@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: tomcat
+spec:
+  selector:
+    matchLabels:
+      version: v1
+      app: tomcat
+  template:
+    metadata:
+      name: tomcat
+      labels:
+        version: v1
+        app: tomcat
+    spec:
+      containers:
+        - name: tomcat
+          image: tomcat:latest
+          ports:
+            - name: tomcat
+              containerPort: 8080
+              protocol: TCP
+          nodeSelector:
+            disk: hdd

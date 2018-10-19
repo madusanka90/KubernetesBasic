@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: deamon
+---
+apiVersion: apps/v1
+kind: DeamonSet
+metadata:
+  name: deamon
+spec:
+  selector:
+    matchLabels:
+      app: web
+      version: v1
+  template:
+    metadata:
+      name: deamon
+      labels:
+        app: web
+        version: v1
+    spec:
+      nodeSelector:
+       disk: hdd
+      containers:
+        - name: deamon
+          image: httpd:latest
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP

@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: testjob2
+spec:
+  completion: 6
+  parallelism: 3
+  template:
+    metadata:
+      name: testjob2
+      labels:
+        version: v1
+    spec:
+      containers:
+        - name: testjob2
+          image: perl
+          command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+      restartPolicy: OnFailure
+    backOffLimit: 4

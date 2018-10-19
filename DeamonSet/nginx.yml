@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      version: latest
+      tier: frontend
+  template:
+    metadata:
+      name: nginx
+      labels:
+        version: latest
+        tier: frontend
+    spec:
+      nodeSelector:
+        disk: ssd
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+              protocol: TCP
+              name: http

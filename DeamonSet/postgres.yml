@@ -1,39 +1,29 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: tomcat
----
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: DaemonSet
 metadata:
-  name: tomcat
-  namespace: tomcat
+  name: mydaemon
 spec:
-  replicas: 3
-  minReadySeconds: 10
   selector:
     matchLabels:
       version: v1
-      tier: frontend
-    matchExpressions:
-      - {key: version, operator: In, value: [v1, v2, v3]}
+      tier: backend
   template:
     metadata:
-      name: tomcat
+      name: mydaemon
       labels:
         version: v1
-        tier: frontend
+        tier: backend
     spec:
       containers:
-        - name: tomcat
-          image: tomcat:latest
+        - name: mydaemon
+          image: postgres:latest
           ports:
-            - containerPort: 8080
-              name: tomcat
+            - containerPort: 5432
+              name: postgres
               protocol: TCP
           env:
-            - name: "CATALINA_HOME"
-              value: "/usr/local/tomcat"
+            - name: POSTGRES_PASSWORD
+              value: password
           resources:
             requests:
               cpu: "200m"
@@ -44,7 +34,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: 8080
+              port: 80
             initialDelaySeconds: 10
             timeoutSeconds: 1
             periodSeconds: 5
@@ -52,15 +42,17 @@ spec:
           readinessProbe:
             httpGet:
               path: /
-              port: 8080
+              port: 80
             initialDelaySeconds: 10
             timeoutSeconds: 1
             periodSeconds: 5
             failureThreshold: 3
+          nodeSelector:
+            disk: ssd
           volumeMounts:
-            - name: "tomcat-vol"
-              mountPath: "/usr/local/tomcat/webapps"
+            - name: "postgres-data"
+              mountPath: "/mnt/postgre-data"
       volumes:
-        - name: "tomcat-vol"
+        - name: "postgres-data"
           hostPath:
-            path: "/mnt/tomcat-vol"
+            path: "/mnt/postgre-data"

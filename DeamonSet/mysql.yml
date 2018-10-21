@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      version: latest
+      tier: backend
+  template:
+    metadata:
+      name: mysql
+      labels:
+        version: latest
+        tier: backend
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          ports:
+            - containerPort: 3306
+              name: mysql-port
+              protocol: TCP
+      nodeSelector:
+        disk: ssd

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  namespace: miniproj
+spec:
+  replicas: 1
+  minReadySeconds: 20
+  selector:
+    matchLabels:
+      role: db
+      db: postgres
+      teir: backend
+    template:
+      metadata:
+        name: db
+        labels:
+          role: db
+          db: postgres
+          teir: backend
+      containers:
+        - name: db
+          imagePullPolicy: true 
+          image: postgres:9.4
+          ports:
+            - containerPort: 5432
+              protocol: TCP  
+      restartPolicy: always

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: miniproj
+spec:
+  replicas: 1
+  minReadySeconds: 10
+  strtegy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailble: 1
+  selector:
+    matchLabels:
+      role: worker
+    template:
+      metadata:
+        name: worker
+        labels:
+          role: worker
+          version: v1
+          app: java
+      containers:
+        - name: worker
+          image: schoolofdevops/worker:latest

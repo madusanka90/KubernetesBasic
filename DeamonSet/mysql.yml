@@ -5,21 +5,37 @@ metadata:
 spec:
   selector:
     matchLabels:
+<<<<<<< HEAD
       version: latest
+=======
+      version: v1
+>>>>>>> afe16c522c625ae4fd15cdf9b8c51a6c99b95ece
       tier: backend
   template:
     metadata:
       name: mysql
       labels:
+<<<<<<< HEAD
         version: latest
+=======
+        version: v1
+>>>>>>> afe16c522c625ae4fd15cdf9b8c51a6c99b95ece
         tier: backend
     spec:
       containers:
         - name: mysql
           image: mysql:latest
           ports:
+<<<<<<< HEAD
             - containerPort: 3306
               name: mysql-port
               protocol: TCP
       nodeSelector:
         disk: ssd
+=======
+            - containerPort:
+              name: mysql-port
+              protocol: TCP
+      nodeSelector:
+        disk: ssd    
+>>>>>>> afe16c522c625ae4fd15cdf9b8c51a6c99b95ece

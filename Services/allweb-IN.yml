@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: httpd
+spec:
+  rules:
+    - host: httpd.example.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: httpd
+              servicePort: 80
+    - host: nginx.example.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: nginx
+              servicePort: 80
+    - host: tomcat.example.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: tomcat
+              servicePort: 80

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Services
+metadata:
+  name: mysqlsvc
+spec:
+  selector:
+    version: v5.6
+    database: mysql
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+      nodePort: 30001
+  type: NodePort

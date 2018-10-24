@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: httpd
+  labels:
+    version: latest
+    engine: latest
+spec:
+  containers:
+    - name: httpd
+      image: httpd:latest
+      ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+      volumeMounts:
+        - name: httpd-vol
+          mountPath: /usr/local/apache2/htdocs
+          readOnly: true
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 80
+        initialDelaySeconds: 10
+        timeoutSeconds: 1
+        periodSeconds: 5
+        failureThreshold: 3
+    - name: fortune
+      image: luksa/fortune
+  volumes:
+    - name: httpd-vol
+      emptyDir: {}

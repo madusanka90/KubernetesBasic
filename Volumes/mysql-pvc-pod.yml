@@ -1,0 +1,22 @@
+aptVersion: v1
+kind: Pod
+metadata:
+  name: mysql
+  labels:
+    version: latest
+    tier: backend
+spec:
+  containers:
+    - name: mysql
+      image: mysql:latest
+      ports:
+        - containerPort: 3306
+          name: mysql
+          protocol: TCP
+      volumeMounts:
+        - name: mysql-data
+          mountPath: /mnt/mysql-data
+  volume:
+    - name: mysql-data
+      persistentVolumeClaim:
+        claimName: mysql-pvc

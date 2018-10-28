@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql
+spec:
+  containers:
+    - name: mysql
+      image: mysql:latest
+      ports:
+        - containerPort: 3306
+          name: mysql
+          protocol: TCP
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: mysqlconfig
+              key: MYSQL_ROOT_PASSWORD

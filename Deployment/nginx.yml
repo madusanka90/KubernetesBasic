@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: nginxdep
+spec:
+  replicas: 10
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 2
+      maxSurge: 2
+  revisionHistoryLimit: 4
+  selector:
+    matchLabels:
+      tier: backend
+      version: v1
+    matchExpressions:
+      - {name: version, operator: In, value:[v1, v2, v3, v4]}
+  template:
+    metadata:
+      name: nginxdep
+      labels:
+        tier: backend
+        version: v1
+    spec:
+      containers:
+        - name: nginxdep
+          image: bhagyam90/nginx:v1
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            periodSeconds: 20
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            periodSeconds: 20
+            failureThreshold: 3
+          env:
+            - name: NGINX_PATH
+              value: /usr/share/nginx/html
+          volumeMounts:
+            - name: nginx-data
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: nginx-data
+          hostPath:
+            path: /mnt/nginx-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginxsvc
+spec:
+  selector:
+    tier: backend
+    version: v1
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30001
+      name: nginx-port
+  type: NodePort

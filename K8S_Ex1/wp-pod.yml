@@ -1,33 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mysql
+  name: wordpress
 spec:
   replicas: 1
   minReadySeconds: 10
   strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
-  revisionHistoryLimit: 4
+    type: Recreate
   selector:
-    matchLabels:
-      tier: backend
-      version: v5
+    matchExpressions:
+      - {key: version, operator: In, value: [v4, v5, v6]}
   template:
     metadata:
-      name: mysql
+      name: wordpress
       labels:
-        tier: backend
-        version: v5
+        tier: frontend
+        version: v4
     spec:
       containers:
-        - name: mysql
-          image: mysql:5.6
+        - name: wordpress
+          image: wordpress:4.8-apache
           ports:
-            - containerPort: 3306
-              name: mysql-port
+            - containerPort: 80
+              name: http
               protocol: TCP
           resources:
             requests:
@@ -37,15 +32,17 @@ spec:
               cpu: "500m"
               memory: "512Mi"
           env:
-            - name: MYSQL_ROOT_PASSWORD
+            - name: WORDPRESS_DB_HOST
+              value: mysql-svc
+            - name: WORDPRESS_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mysql-sec
                   key: password
+                  name: mysql-sec
           volumeMounts:
-            - name: mysql-data
-              mountPath: /var/lib/mysql
+            - name: wp-data
+              mountPath: /var/www/html
       volumes:
-        - name: mysql-data
+        - name: wp-data
           persistentVolumeClaim:
-            claimName: mysql-pvc
+            claimName: wp-pvc

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql-pod
+  labels:
+    tier: backend
+    version: v5
+spec:
+  containers:
+    - name: mysql
+      image: mysql:5.6
+      port:
+        - containerPort: 3306
+          name: mysql
+          protocol: TCP
+      resources:
+        requests:
+          cpu: "200m"
+          memory: "512Mi"
+        limits:
+          cpu: "500m"
+          memory: "1024Mi"
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          key: password

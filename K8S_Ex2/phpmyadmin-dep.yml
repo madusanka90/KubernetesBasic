@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+spec:
+  replicas: 1
+  minReadySeconds: 10
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      tier: frontend
+      version: 4
+  template:
+    metadata:
+      name: admin
+      labels:
+        tier: frontend
+        version: 4
+    spec:
+      containers:
+        - name: admin
+          image: phpmyadmin/phpmyadmin:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PMA_HOST
+              value: mysql   

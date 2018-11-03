@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-dep
+spec:
+  replicas: 4
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 2
+      maxSurge: 2
+  revisionHistoryLimit: 4
+  selector:
+    matchLabels:
+      version: v1
+      tier: frontend
+    matchExpressions:
+      - {key: version, operator: In, values: [v1, v2, v3, v4]}
+  template:
+    metadata:
+        name: nginx
+        labels:
+          version: v1
+          tier: frontend
+    spec:
+      containers:
+        - name: mynginx
+          image: bhagyam90/nginx:v1
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          restartPolicy: OnFailure
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1024Mi"
+          env:
+            - name: NGINX_HOME
+              valueFrom:
+                configMapKeyRef:
+                  name: nginx-cm
+                  key: app_home
+                
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+spec:
+  selector:
+    version: v1
+    tier: frontend
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30001
+      name: nginx
+

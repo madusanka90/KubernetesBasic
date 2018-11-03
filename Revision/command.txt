@@ -1,0 +1,21 @@
+#Change image of a deployment
+    $ kubectl set image deployment/<deployment-name> <container-name>=<new-image-version>
+
+#Check rollout status of a deployment
+    $ kubectl rollout status deploy/<deployment-name>
+
+#Check deployment rollout history
+    $ kubectl rollout history deploy/<deployment-name> --revision=<desired-revision-number>
+
+#Rollback the deployment to desired version
+    $ kubectl rollout undo deploy/<deployment-name> --to-revision=<desired-version-number>
+
+#Create configmap from command line
+    $ kubectl create configMap  --from-literal=MYSQL_ROOT_PASSWORD=password
+
+#Scale replicas in commandline
+    $ kubectl scale deploy/<deployment-name> --replicas=<# of replicas>
+
+#Autoscale replicas in commandline
+    $ kubectl autoscale deploy/<deployment-name> --min=<# of minimum replicas>  --max=<# of maximum replicas>
+

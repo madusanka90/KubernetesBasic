@@ -19,3 +19,45 @@
 #Autoscale replicas in commandline
     $ kubectl autoscale deploy/<deployment-name> --min=<# of minimum replicas>  --max=<# of maximum replicas>
 
+#Give a label to pod
+    $kubectl label pod <pod-name> <key>:<value> --overwrite
+
+#Select pods from lables
+    $kubectl get pod -l <key>:<value>
+
+#Describe pod from a label
+    $kubectl describe pod -l <key>:<value>
+
+#Remove taint from a master
+    $kubectl taint nodes <node-name> node-role.kubernetes.io/master-
+
+#Set taint on a node
+    $kubectl taint nodes <node-name> node-role.kubernetes.io=master: NoSchedule
+
+#K8S log directory
+    $ /var/log/containers
+
+#Upgrade kubernetes
+    1) upgrade controle plane (update master with apt)
+        $sudo apt upgrade kubeadm
+    2) verify kubeadm update
+        $kubeadm version
+    3) upgrade plan
+        $sudo kubeadm upgrade plan
+    4) upgrade all the component
+        $ sudo kubeadm upgrade apply <version>
+
+#Upgrade kubelet on each node
+    * before upgrade kubelet on each node we need to make sure that non of the pods are running on that perticuler node which we are going to upgrade kubelet
+        1) unschedule or remove any pod running in the node which are going to upgrade kubelet
+            $ kubectl drain <node-name> --ignore-daemonsets     (only run daemonsets like cni)
+
+        2)upgrade kubelet
+            $ sudo apt update kubelet
+
+        3)verify whether successfully running kubelet
+            $ systemctl status kubelet
+        
+        4) enable scheduling on the node which we have upgraded the kubelet
+            $ kubectl uncordon <node-name>
+

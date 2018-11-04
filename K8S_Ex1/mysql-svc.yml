@@ -10,4 +10,4 @@ spec:
     - port: 3306
       targetPort: 3306
       name: mysql-port
-      ClusterIP: None
+  clusterIP: None

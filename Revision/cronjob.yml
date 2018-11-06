@@ -1,0 +1,24 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: mycronjob
+spec:
+  completion: 4
+  parallelism: 2
+  schedule: "0,15,30,45 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: mycronjob
+          labels:
+            version: v1
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: busybox
+              image: busybox:latest
+              command:
+                - echo
+                - "version 1"
+      

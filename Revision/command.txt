@@ -39,11 +39,11 @@
 
 #Upgrade kubernetes
     1) upgrade controle plane (update master with apt)
-        $sudo apt upgrade kubeadm
+        $ sudo apt upgrade kubeadm
     2) verify kubeadm update
-        $kubeadm version
+        $ kubeadm version
     3) upgrade plan
-        $sudo kubeadm upgrade plan
+        $ sudo kubeadm upgrade plan
     4) upgrade all the component
         $ sudo kubeadm upgrade apply <version>
 
@@ -61,3 +61,19 @@
         4) enable scheduling on the node which we have upgraded the kubelet
             $ kubectl uncordon <node-name>
 
+#Retreive the token which was used in "kubeadm init"
+    $ sudo kubeadm token list
+
+#Create a new token
+    $ sudo kubeadm token generate
+
+#Generate join command
+    $ sudo kubeadm token create <new-token> --ttl <number-of-hours> --print-join-command
+
+#Upgrade Os on a node
+    1) unschedule or remove any pod running in the node which are going to upgrade kubelet
+        $ kubectl drain <node-name> --ignore-daemonsets     (only run daemonsets like cni)
+    
+    2) remove node from the cluster
+        $ kubectl delete node <node-name>
+    

@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: nginxrs
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      version: v1
+      tier: frontend
+    matchExpressions:
+     - {key: version, operator: In, values: [v1, v2, v3]}
+  template:
+    metadata:
+      name: nginx
+      labels:
+        version: v1
+        tier: frontend
+    spec:
+      containers:
+        - name: nginx
+          image: bhagyam90/nginx:v1
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          env:
+            - name: NGINX_HOME
+              value: "/etc/nginx"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "200m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
+            periodSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              comand:
+                - cat
+                - /var/lib/mysql.sock
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
+            periodSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: mysql-vol
+              mountPath: /var/lib/mysql
+      
+              

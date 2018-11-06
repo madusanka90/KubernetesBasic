@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: busybox
+spec:
+  selector:
+    matchLabels:
+      app: busybox
+      version: v1
+  template:
+    metadata:
+      name: busy
+      labels:
+        app: busybox
+        version: v1
+  spec:
+    containers:
+      - name: busy
+        image: busybox:latest
+        command:
+          - sleep
+          - "10"
+    nodeSelector:
+      disk: ssd
